@@ -34,22 +34,30 @@ class TweetTopology
 
     // now create the tweet spout with the credentials
     TweetSpout tweetSpout = new TweetSpout(
-        "[Your customer key]",
-        "[Your secret key]",
-        "[Your access token]",
-        "[Your access secret]"
+      // "[Your customer key]",
+      // "[Your secret key]",
+      // "[Your access token]",
+      // "[Your access secret]"
+      "c6zoiDa29K1pH1POCUlcgWuan",
+      "SFvDusVGjlITXpuM6skzhkGYfOK9CV26V32aBAwDba9HopeTpk",
+      "3256721928-FNglQhsWYtZaTFgG2CG0aOs3EWnHFoBdWLjCBYV",
+      "Gkaagu87IQIxAdy7F1sH2xQmvypbTPRPwKPxKH9P2bKcl"
     );
 
-    //*********************************************************************
-    // Complete the Topology.
-    // Part 0: attach the tweet spout to the topology - parallelism of 1
-    // Part 1: // attach the parse tweet bolt, parallelism of 10 (what grouping is needed?)
-    // Part 2: // attach the count bolt, parallelism of 15 (what grouping is needed?)
-    // Part 3: attach the report bolt, parallelism of 1 (what grouping is needed?)
-    // Submit and run the topology.
+    // attach the tweet spout to the topology - parallelism of 1
+    builder.setSpout("tweet-spout", tweetSpout, 1);
 
+    // attach the parse tweet bolt using shuffle grouping
+    builder.setBolt("parse-tweet-bolt", new ParseTweetBolt(), 10).shuffleGrouping("tweet-spout");
 
-    //*********************************************************************
+    // attach the count bolt using fields grouping - parallelism of 15
+    //builder.setBolt("count-bolt", new CountBolt(), 15).fieldsGrouping("parse-tweet-bolt", new Fields("tweet-word"));
+
+    // attach rolling count bolt using fields grouping - parallelism of 5
+    builder.setBolt("rolling-count-bolt", new RollingCountBolt(30, 10), 1).fieldsGrouping("parse-tweet-bolt", new Fields("tweet-word"));
+
+    // attach the report bolt using global grouping - parallelism of 1
+    builder.setBolt("report-bolt", new ReportBolt(), 1).globalGrouping("rolling-count-bolt");
 
     // create the default config object
     Config conf = new Config();

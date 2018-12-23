@@ -55,10 +55,14 @@ class TweetTopology
 
     // now create the tweet spout with the credentials
     TweetSpout tweetSpout = new TweetSpout(
-        "[Your customer key]",
-        "[Your secret key]",
-        "[Your access token]",
-        "[Your access secret]"
+        // "[Your customer key]",
+        // "[Your secret key]",
+        // "[Your access token]",
+        // "[Your access secret]"
+        "c6zoiDa29K1pH1POCUlcgWuan",
+        "SFvDusVGjlITXpuM6skzhkGYfOK9CV26V32aBAwDba9HopeTpk",
+        "3256721928-FNglQhsWYtZaTFgG2CG0aOs3EWnHFoBdWLjCBYV",
+        "Gkaagu87IQIxAdy7F1sH2xQmvypbTPRPwKPxKH9P2bKcl"
     );
 
     // attach the tweet spout to the topology - parallelism of 1
